@@ -59,19 +59,19 @@ function check_env() {
  */
 function check_dirfile() {
     $items = [
-            ['dir', '可写', 'success', '/public/upload/default/file'],
-            ['dir', '可写', 'success', '/public/upload/default/picture'],
-            ['dir', '可写', 'success', '/public/upload/head_portrait'],
-            ['dir', '可写', 'success', '/app/install/data'],
-            ['dir', '可写', 'success', '/runtime'],
-            ['file', '可写', 'success', '/app'],
+            ['dir', '可写', 'success', DS.'public'.DS.'upload'.DS.'default'.DS.'file'],
+            ['dir', '可写', 'success', DS.'public'.DS.'upload'.DS.'default'.DS.'picture'],
+            ['dir', '可写', 'success', DS.'public'.DS.'upload'.DS.'head_portrait'],
+            ['dir', '可写', 'success', DS.'app'.DS.'install'.DS.'data'],
+            ['dir', '可写', 'success', DS.'runtime'],
+            ['file', '可写', 'success', DS.'app'],
     ];
 
     foreach ($items as &$val) {
         $item = realpath('../') . $val[3];
         if ('dir' == $val[0]) {
             if (!is_writable($item)) {
-                if (is_dir($items)) {
+                if (is_dir($item)) {
                     $val[1] = '可读';
                     $val[2] = 'error';
                     Session::set('error', true, 'install');
