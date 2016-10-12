@@ -20,7 +20,6 @@ class Deploy extends Model {
                     $query->where(['status' => 1])->field('type,name,value');
                 });
         $config = [];
-//        dump($data);die;
         if ($data && is_array($data)) {
             foreach ($data as $value) {
                 $config[strtolower($value->data['name'])] = self::parse($value->data['type'], $value->data['value']);
