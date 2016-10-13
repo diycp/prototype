@@ -8,7 +8,7 @@ prototype 预览地址 [prototype后台原型系统](http://tp5.calm7.com/admin/
 
 ThinkPHP5详细开发文档参考 [ThinkPHP5完全开发手册](http://www.kancloud.cn/manual/thinkphp5)
 
-运行环境
+运行环境 
 ===============
 
 > prototype的运行环境要求PHP7.0.0以上。
