@@ -16,6 +16,7 @@ ThinkPHP5详细开发文档参考 [ThinkPHP5完全开发手册](http://www.kancl
  
 
 window系统 WampServer Version 3.0.6 64bit 配置示例
+
 配置如下通过虚拟域名访问
 配置apache下的httpd-vhosts.conf文件
 
@@ -43,9 +44,12 @@ window系统 WampServer Version 3.0.6 64bit 配置示例
 注意：安装wamp好后，一定要切换到php7版本  部分css js 使用了Bootstrap中文网开源项目免费 CDN 服务 请务必联网
 
 关闭mysql 的严格模式
+
 修改my.ini
 sql-mode="STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"
+
 修改为
+
 sql-mode="NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"
 
 
