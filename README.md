@@ -23,7 +23,7 @@ window系统 WampServer Version 3.0.6 64bit 配置示例
 配置如下通过虚拟域名访问
 配置apache下的httpd-vhosts.conf文件 路径X:\wamp64\bin\apache\apache2.4.23\conf\extra
 
-增加一下代码
+增加以下代码
 ~~~
 <VirtualHost *:80>
     DocumentRoot "X:/xxx/tp5/public/"
