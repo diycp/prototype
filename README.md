@@ -4,7 +4,8 @@ prototype 1.0
 
 prototype，是一个后台原型系统，主要是解决开发中基础系统方案，基于onethink重构（onthink的功能大致相同）,使用ThinkPHP 5.0.1开发,去除了独立模型和插件机制，保留Install安装模块。
 
-prototype 预览地址 [prototype](http://tp5.calm7.com/admin/login/index.html)
+prototype 预览地址 [prototype后台原型系统](http://tp5.calm7.com/admin/login/index.html)
+
 ThinkPHP5详细开发文档参考 [ThinkPHP5完全开发手册](http://www.kancloud.cn/manual/thinkphp5)
 
 运行环境
