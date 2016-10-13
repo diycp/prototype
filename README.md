@@ -17,7 +17,6 @@ ThinkPHP5详细开发文档参考 [ThinkPHP5完全开发手册](http://www.kancl
 
 > mysql 建议关闭严格模式
  
-
 window系统 WampServer Version 3.0.6 64bit 配置示例
 
 配置如下通过虚拟域名访问
