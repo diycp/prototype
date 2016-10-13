@@ -120,7 +120,7 @@ class Admin {
                     $groups = $Menu->where(['group' => ['neq', ''], 'pid' => $item['id']])->distinct(true)->column("group"); //生成child树
                     $where['pid'] = $item['id'];
                     $second_urls = $Menu->where($where)->Field('id,url')->select() ?? []; //获取二级分类的合法url
-                    $to_check_urls = $this->toCheckUrl($second_urls); // 检测菜单权限
+                    $to_check_urls = $this->toCheckUrl($Request,$second_urls); // 检测菜单权限
 
                     foreach ($groups as $g) {// 按照分组生成子菜单树
                         $where['pid'] = $item['id'];
@@ -158,16 +158,17 @@ class Admin {
 
     /**
      * 非超级管理员的权限检测
+     * @param object $Request Request对象
      * @param array $second_urls 
      * @author staitc7 <static7@qq.com>
      * @return mixed
      */
-    private function toCheckUrl(array $second_urls = []) {
+    private function toCheckUrl(object $Request,array $second_urls = []) {
         // 检测菜单权限
         if ($this->uid) {
             return null;
         }
-        $module = Request::instance()->module();
+        $module = $Request->module();
         $to_check_urls = [];
         foreach ($second_urls as $key => $to_check_url) {
             if (stripos($to_check_url, $module) !== 0) {
