@@ -11,7 +11,9 @@ ThinkPHP5详细开发文档参考 [ThinkPHP5完全开发手册](http://www.kancl
 ===============
 
 > prototype的运行环境要求PHP7.0.0以上。
+
 > 建议通过虚拟域名访问
+
 > mysql 建议关闭严格模式
  
 
