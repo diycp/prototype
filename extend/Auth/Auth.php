@@ -86,8 +86,7 @@ class Auth {
 
     public function __construct() {
         if (Config::get('auth_config')) {
-            //可设置配置项 auth_config, 此配置项为数组。
-            $this->config = array_merge($this->config, Config::get('auth_config'));
+            $this->config = array_merge($this->config, Config::get('auth_config')); //可设置配置项 auth_config, 此配置项为数组。
         }
     }
 
@@ -106,11 +105,12 @@ class Auth {
         $authList = $this->getAuthList($uid, $type); //获取用户需要验证的所有有效规则列表
         if (is_string($name)) {
             $name = strtolower($name);
-            if (strpos($name, ',') !== false) {
-                $name = explode(',', $name);
-            } else {
-                $name = [$name];
-            }
+//            if (strpos($name, ',') !== false) {
+//                $name = explode(',', $name);
+//            } else {
+//                $name = [$name];
+//            }
+            $name = strpos($name, ',') !== false ? explode(',', $name) : [$name];
         }
         $list = []; //保存验证通过的规则名
         if ($mode == 'url') {
@@ -151,12 +151,9 @@ class Auth {
         if (isset($groups[$uid])) {
             return $groups[$uid];
         }
-        $user_groups = Db::name($this->config['auth_group_access'])
-                ->alias('a')
-                ->join($this->config['auth_group'] . " g", "g.id=a.group_id")
-                ->where("a.uid={$uid} and g.status=1")
-                ->field('uid,group_id,title,rules')
-                ->select();
+        $user_groups = Db::view($this->config['auth_group_access'], 'uid,group_id')
+                        ->view($this->config['auth_group'], 'title,rules', "{$this->config['auth_group_access']}.group_id={$this->config['auth_group']}.id")
+                        ->where(['uid' => $uid, 'status' => 1])->select();
         $groups[$uid] = $user_groups ? $user_groups : [];
         return $groups[$uid];
     }
@@ -172,13 +169,9 @@ class Auth {
         if (isset($_authList[$uid . $t])) {
             return $_authList[$uid . $t];
         }
-//        if ($this->config['auth_type'] == 2 && isset($_SESSION['_auth_list_' . $uid . $t])) {
-//            return $_SESSION['_auth_list_' . $uid . $t];
-//        }
         if ($this->config['auth_type'] == 2 && Session::has('_auth_list_' . $uid . $t)) {
             return Session::get('_auth_list_' . $uid . $t);
         }
-
         //读取用户所属用户组
         $groups = $this->getGroups($uid);
         $ids = []; //保存用户所属用户组设置的所有权限规则id
@@ -198,7 +191,6 @@ class Auth {
         ];
         //读取用户组所有权限规则
         $rules = Db::name($this->config['auth_rule'])->where($map)->field('condition,name')->select();
-
         //循环规则，判断结果。
         $authList = [];   //
         foreach ($rules as $rule) {
@@ -208,14 +200,12 @@ class Auth {
                 @(eval('$condition=(' . $command . ');'));
                 $condition && $authList[] = strtolower($rule['name']);
             } else {
-                //只要存在就记录
-                $authList[] = strtolower($rule['name']);
+                $authList[] = strtolower($rule['name']); //只要存在就记录
             }
         }
         $_authList[$uid . $t] = $authList;
         if ($this->config['auth_type'] == 2) {
-            //规则列表结果保存到session
-            $_SESSION['_auth_list_' . $uid . $t] = $authList;
+            $_SESSION['_auth_list_' . $uid . $t] = $authList; //规则列表结果保存到session
         }
         return array_unique($authList);
     }
