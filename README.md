@@ -4,6 +4,14 @@ prototype 1.0
 
 prototype，是一个后台原型系统，主要是解决开发中基础系统方案，基于onethink重构（与onthink的功能大致相同）,使用ThinkPHP 5.0.1开发,去除了独立模型和插件机制，保留Install安装模块。
 
+###特点：
+* 没有继承 controller 
+* ajax提交返回和分页 
+* html5 ajax异步上传文件 图片 裁剪功能
+* 没有使用助手函数. 
+* 去除独立模型和插件功能（都玩composer，还要插件干嘛）
+* 使用php7新特性
+
 prototype 预览地址 [prototype后台原型系统](http://tp5.calm7.com/admin/login/index.html)
 
 ThinkPHP5详细开发文档参考 [ThinkPHP5完全开发手册](http://www.kancloud.cn/manual/thinkphp5)
