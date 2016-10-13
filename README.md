@@ -48,7 +48,9 @@ window系统 WampServer Version 3.0.6 64bit 配置示例
 修改my.ini
 
 sql-mode="STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"
+
 修改为
+
 sql-mode="NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"
 
 
