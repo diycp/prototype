@@ -4,6 +4,7 @@ namespace app\admin\controller;
 
 use think\Loader;
 use think\Config;
+use think\Log;
 use think\Url;
 use think\Request;
 use think\Db;
@@ -21,38 +22,38 @@ class AuthManager extends Admin {
      */
     public function index() {
         $data = Loader::model('AuthGroup')->authManagerList();
-        $value = [
-            'list' => $data['data'] ?? null,
-            'page' => $data['page']
-        ];
+        $value = ['list' => $data['data'] ?? null, 'page' => $data['page']];
         $this->view->metaTitle = '权限管理首页';
         return $this->view->assign($value)->fetch();
     }
 
     /**
      * 单条数据状态修改
+     * @param Request $request
      * @param int $value 状态
-     * @param int ids 数据条件
+     * @param null $ids
+     * @internal param ids $int 数据条件
      * @author staitc7 <static7@qq.com>
      */
-    public function setStatus(Request $request,$value = null, $ids = null) {
+    public function setStatus(Request $request, $value = null, $ids = null) {
         empty($ids) && $this->error('请选择要操作的数据');
-        !is_numeric((int) $value) && $this->error('参数错误');
+        !is_numeric((int)$value) && $this->error('参数错误');
         $info = Loader::model('AuthGroup')->setStatus(['id' => ['in', $ids]], ['status' => $value]);
-        return $info !== FALSE ? $this->success($value == -1 ? '删除成功' : '更新成功') : $this->error($value == -1 ? '删除失败' : '更新失败');
+        return $info !== false ? $this->success($value == -1 ? '删除成功' : '更新成功') : $this->error($value == -1 ? '删除失败' : '更新失败');
     }
 
     /**
      * 批量数据更新
+     * @param Request $request
      * @param int $value 状态
      * @author staitc7 <static7@qq.com>
      */
-    public function batchUpdate(Request $request,$value = null) {
+    public function batchUpdate(Request $request, $value = null) {
         $ids = $request->post();
         empty($ids['ids']) && $this->error('请选择要操作的数据');
-        !is_numeric((int) $value) && $this->error('参数错误');
+        !is_numeric((int)$value) && $this->error('参数错误');
         $info = Loader::model('AuthGroup')->setStatus(['id' => ['in', $ids['ids']]], ['status' => $value]);
-        return $info !== FALSE ? $this->success($value == -1 ? '删除成功' : '更新成功') : $this->error($value == -1 ? '删除失败' : '更新失败');
+        return $info !== false ? $this->success($value == -1 ? '删除成功' : '更新成功') : $this->error($value == -1 ? '删除失败' : '更新失败');
     }
 
     /**
@@ -61,8 +62,8 @@ class AuthManager extends Admin {
      * @author staitc7 <static7@qq.com>
      */
     public function editGroup($id = 0) {
-        if ((int) $id > 0) {
-            $value['info'] = Loader::model('AuthGroup')->editGroup((int) $id);
+        if ((int)$id > 0) {
+            $value['info'] = Loader::model('AuthGroup')->editGroup((int)$id);
         }
         return $this->view->assign($value ?? null)->fetch();
     }
@@ -72,16 +73,19 @@ class AuthManager extends Admin {
      * @author staitc7 <static7@qq.com>
      */
     public function writeGroup() {
-        $info = Loader::model('AuthGroup')->renew();
-        return is_array($info) ? $this->success('操作成功', Url::build('AuthManager/index')) : $this->error($info);
+        $AuthGroup = Loader::model('AuthGroup');
+        $info = $AuthGroup->renew();
+        return $AuthGroup->getError() ? $this->error($info) : $this->success('操作成功', Url::build('AuthManager/index'));
     }
 
     /**
      * 访问授权页面
      * @author staitc7 <static7@qq.com>
+     * @param int $group_id 组id
+     * @return
      */
     public function access($group_id = 0) {
-        (int) $group_id || $this->error('用户组ID错误');
+        (int)$group_id || $this->error('用户组ID错误');
         $this->updateRules();
         $auth_group = $this->authGroup();
         $node_list = Loader::controller('Menu')->returnNodes();
@@ -91,14 +95,7 @@ class AuthManager extends Admin {
         $main_rules = $AuthRule->mapList($map, 'name,id');
         $map['type'] = Config::get('auth_rule.rule_url');
         $child_rules = $AuthRule->mapList($map, 'name,id');
-        $value = [
-            'main_rules' => one_dimensional($main_rules),
-            'auth_rules' => one_dimensional($child_rules),
-            'node_list' => $node_list,
-            'auth_group' => $auth_group,
-            'this_group' => $auth_group[$group_id],
-            'group_id' => $group_id,
-        ];
+        $value = ['main_rules' => one_dimensional($main_rules), 'auth_rules' => one_dimensional($child_rules), 'node_list' => $node_list, 'auth_group' => $auth_group, 'this_group' => $auth_group[$group_id], 'group_id' => $group_id,];
         $this->view->metaTitle = '访问授权';
         return $this->view->assign($value)->fetch();
     }
@@ -156,7 +153,7 @@ class AuthManager extends Admin {
             }
         }
         if ($AuthRule->getError()) {
-            \think\Log::record("[ 信息 ]：" . $AuthRule->getError());
+            Log::record("[ 信息 ]：" . $AuthRule->getError());
             return false;
         } else {
             return true;
@@ -169,15 +166,10 @@ class AuthManager extends Admin {
      */
     public function rulesArrayUpdate() {
         $id = Request::instance()->post('id');
-        (int) $id || $this->error('参数错误');
+        (int)$id || $this->error('参数错误');
         $rules = Request::instance()->post()['rules'];
         sort($rules);
-        $data = [
-            'rules' => implode(',', array_unique($rules)),
-            'module' => 'admin',
-            'id' => $id,
-            'type' => Config::get('auth_config.type_admin'),
-        ];
+        $data = ['rules' => implode(',', array_unique($rules)), 'module' => 'admin', 'id' => $id, 'type' => Config::get('auth_config.type_admin'),];
         $info = Db::name('AuthGroup')->update($data);
         return $info !== false ? $this->success('操作成功', Url::build('AuthManager/index')) : $this->error($info);
     }
@@ -185,22 +177,17 @@ class AuthManager extends Admin {
     /**
      * 用户组授权用户列表
      * @author static7
+     * @param int $group_id
+     * @return
      */
     public function user($group_id = 0) {
-        (int) $group_id || $this->error('用户组ID错误');
+        (int)$group_id || $this->error('用户组ID错误');
         $auth_group = $this->authGroup();
         $map = ['group_id' => $group_id, 'status' => ['egt', 0]];
         $member = Config::get('auth_config.auth_user');
         $auth_group_access = Config::get('auth_config.auth_group_access');
-        $list = Db::view($member, 'uid,nickname,last_login_time,last_login_ip,status')
-                        ->view($auth_group_access, 'group_id', "{$auth_group_access}.uid={$member}.uid")
-                        ->where($map)->order('uid asc')->paginate(Config::get('list_rows') ?? 10);
-        $value = [
-            'list' => $list,
-            'page' => $list->render(),
-            'auth_group' => $auth_group,
-            'group_id' => $group_id
-        ];
+        $list = Db::view($member, 'uid,nickname,last_login_time,last_login_ip,status')->view($auth_group_access, 'group_id', "{$auth_group_access}.uid={$member}.uid")->where($map)->order('uid asc')->paginate(Config::get('list_rows') ?? 10);
+        $value = ['list' => $list, 'page' => $list->render(), 'auth_group' => $auth_group, 'group_id' => $group_id];
         $this->view->metaTitle = '用户授权';
         return $this->view->assign($value)->fetch();
     }
@@ -210,11 +197,7 @@ class AuthManager extends Admin {
      * @author staitc7 <static7@qq.com>
      */
     protected function authGroup() {
-        $map = [
-            'status' => ['egt', '0'],
-            'module' => 'admin',
-            'type' => Config::get('auth_config.type_admin')
-        ];
+        $map = ['status' => ['egt', '0'], 'module' => 'admin', 'type' => Config::get('auth_config.type_admin')];
         $field = 'id,title,rules';
         $auth_group_tmp = Loader::model('AuthGroup')->mapList($map, $field);
         $auth_group = null;
@@ -229,14 +212,15 @@ class AuthManager extends Admin {
 
     /**
      * 解除用户授权访问
-     * @param 类型 参数 参数说明
+     * @param int $uid 用户id
+     * @param int $group_id 组id
      * @author staitc7 <static7@qq.com>
      */
     public function removeFromGroup($uid = 0, $group_id = 0) {
-        (int) $uid || $this->error('用户ID错误');
-        (int) $group_id || $this->error('参数错误');
+        (int)$uid || $this->error('用户ID错误');
+        (int)$group_id || $this->error('参数错误');
         $self = is_login();
-        if ((int) $uid === (int) $self) {
+        if ((int)$uid === (int)$self) {
             $this->error('不允许解除自身授权');
         }
         $group = Loader::model('AuthGroup')->checkGroupId($group_id);
@@ -252,12 +236,12 @@ class AuthManager extends Admin {
      * @author staitc7 <static7@qq.com>
      */
     public function addToGroup($uid = null, $group_id = 0) {
-        (int) $group_id || $this->error('参数错误');
+        (int)$group_id || $this->error('参数错误');
         empty($uid) && $this->error('用户组ID不能为空');
         $user_id = array_filter(explode(',', $uid));
         foreach ($user_id as $v) {
-            is_administrator((int) $v) && $this->error("编号 {$v} 该用户为超级管理员");
-            empty(Loader::model('Member')->userId((int) $v)) && $this->error("编号 {$v} 用户不存在");
+            is_administrator((int)$v) && $this->error("编号 {$v} 该用户为超级管理员");
+            empty(Loader::model('Member')->userId((int)$v)) && $this->error("编号 {$v} 用户不存在");
         }
         //检查用户组
         $AuthGroup = Loader::model('AuthGroup');
@@ -275,21 +259,15 @@ class AuthManager extends Admin {
      * @author staitc7 <static7@qq.com>
      */
     public function group($id = 0) {
-        (int) $id || $this->error('参数错误');
+        (int)$id || $this->error('参数错误');
         $AuthGroup = Loader::model('AuthGroup');
         $map = ['status' => 1, 'type' => Config::get('auth_config.type_admin'), 'module' => 'admin'];
         $auth_groups = $AuthGroup->mapList($map, 'id,title');
         $auth_group_access = Config::get('auth_config.auth_group_access');
         $auth_group = Config::get('auth_config.auth_group');
-        $user_group = Db::view($auth_group_access, 'uid,group_id')
-                        ->view($auth_group, 'id', "{$auth_group_access}.group_id={$auth_group}.id")
-                        ->where(['uid' => $id, 'status' => 1])->select();
+        $user_group = Db::view($auth_group_access, 'uid,group_id')->view($auth_group, 'id', "{$auth_group_access}.group_id={$auth_group}.id")->where(['uid' => $id, 'status' => 1])->select();
         $user_groups = $user_group ? array_column($user_group, 'group_id') : null;
-        $value = [
-            'user_id' => $id,
-            'auth_groups' => $auth_groups,
-            'user_groups' => $user_groups ? implode(',', $user_groups) : null
-        ];
+        $value = ['user_id' => $id, 'auth_groups' => $auth_groups, 'user_groups' => $user_groups ? implode(',', $user_groups) : null];
 
         return $this->view->assign($value ?? null)->fetch();
     }
@@ -297,17 +275,17 @@ class AuthManager extends Admin {
     /**
      * 用户添加到用户组
      * @param int $group_id 用户组ID
-     * @param string $uid 用户ID
+     * @param int|string $uid 用户ID
      * @author staitc7 <static7@qq.com>
      */
     public function userToGroup($group_id = 0, $uid = 0) {
-        (int) $uid || $this->error('用户ID错误');
-        is_administrator((int) $uid) && $this->error("该用户为超级管理员");
+        (int)$uid || $this->error('用户ID错误');
+        is_administrator((int)$uid) && $this->error("该用户为超级管理员");
         $group_ids = [];
         if (!empty($group_id)) {
             $group_ids = array_filter($group_id);
             foreach ($group_ids as $v) {
-                empty(Loader::model('AuthGroup')->checkGroupId((int) $v)) && $this->error("编号 {$v} 用户组不存在");
+                empty(Loader::model('AuthGroup')->checkGroupId((int)$v)) && $this->error("编号 {$v} 用户组不存在");
             }
         }
         $AuthGroupAccess = Loader::model('AuthGroupAccess');

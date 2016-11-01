@@ -54,8 +54,10 @@ class User extends Admin {
 
     /**
      * 单条数据状态修改
+     * @param Request $request
      * @param int $value 状态
-     * @param int ids 数据条件
+     * @param null $ids
+     * @internal param ids $int 数据条件
      * @author staitc7 <static7@qq.com>
      */
     public function setStatus(Request $request,$value = null, $ids = null) {
@@ -72,6 +74,7 @@ class User extends Admin {
 
     /**
      * 批量数据更新
+     * @param Request $request
      * @param int $value 状态
      * @author staitc7 <static7@qq.com>
      */

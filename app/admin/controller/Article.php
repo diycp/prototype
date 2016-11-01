@@ -27,7 +27,7 @@ class Article extends Admin {
     public function index($cate_id = 0) {
         $map = [
             'category_id' => (int) $cate_id ?? ['gt', 0],
-            'uid'=> $this->uid,
+            'uid' => $this->uid,
             'status' => ['neq', -1]
         ];
         $data = Loader::model('Document')->lists($map, $this->currentField, 'create_time DESC');
@@ -54,7 +54,7 @@ class Article extends Admin {
         $condition_tmp = Request::instance()->param();
         $map = [
             'category_id' => (int) $condition_tmp['cate_id'] ?? ['gt', 0],
-            'uid'=> $this->uid,
+            'uid' => $this->uid,
             'status' => ['neq', -1]
         ];
         if (!empty($condition_tmp)) {
@@ -352,11 +352,11 @@ class Article extends Admin {
      * @param int ids 数据条件
      * @author staitc7 <static7@qq.com>
      */
-    public function setStatus(Request $Request,$value = null, $ids = null) {
+    public function setStatus(Request $Request, $value = null, $ids = null) {
         empty($ids) && $this->error('请选择要操作的数据');
         !is_numeric((int) $value) && $this->error('参数错误');
         $data ['status'] = $value;
-        ((int) $value !== -1) || $data['update_time'] =$Request->time();
+        ((int) $value !== -1) || $data['update_time'] = $Request->time();
         $info = Loader::model('Document')->setStatus(['id' => ['in', $ids]], $data);
         return $info !== FALSE ?
                 $this->success($value == -1 ? '删除成功' : '更新成功') :
@@ -368,7 +368,7 @@ class Article extends Admin {
      * @param int $value 状态
      * @author staitc7 <static7@qq.com>
      */
-    public function batchUpdate(Request $Request,$value = null) {
+    public function batchUpdate(Request $Request, $value = null) {
         $ids = $Request->post();
         empty($ids['ids']) && $this->error('请选择要操作的数据');
         !is_numeric((int) $value) && $this->error('参数错误');
@@ -474,8 +474,8 @@ class Article extends Admin {
      */
     private function categoryTitle(array $data = []) {
         if (is_array($data)) {//处理列表数据
+            $Category = Db::name('Category');
             foreach ($data as $k => &$v) {
-                $Category = Db::name('Category');
                 $v['category_text'] = $Category->where('id', $v['category_id'])->value('title');
             }
         }
@@ -496,7 +496,7 @@ class Article extends Admin {
         }
         $cate_id = $Request->param('cate_id') ?? 0;
         //是否展开分类
-        $hide_cate = !in_array(strtolower($Request->action()), ['recycle','examine', 'draftbox', 'mydocument']) ? true : false;
+        $hide_cate = !in_array(strtolower($Request->action()), ['recycle', 'examine', 'draftbox', 'mydocument']) ? true : false;
         foreach ($cate as $key => &$value) {//生成每个分类的url
             $value['url'] = Url::build('Article/index', ['cate_id' => $value['id']]);
             $value['active'] = ((int) $cate_id == (int) $value['id'] && $hide_cate) ? true : false;

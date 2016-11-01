@@ -22,7 +22,8 @@ function is_login() {
 
 /**
  * 检测当前用户是否为管理员
- * @return boolean true-管理员，false-非管理员
+ * @param null $uid
+ * @return bool true-管理员，false-非管理员
  * @author 麦当苗儿 <zuojiazi@vip.qq.com>
  */
 function is_administrator($uid = null) {
@@ -32,8 +33,9 @@ function is_administrator($uid = null) {
 
 /**
  * 检测验证码
- * @param  integer $id 验证码ID
- * @return boolean     检测结果
+ * @param $code 验证码ID
+ * @param  integer $id id
+ * @return bool 检测结果
  * @author 麦当苗儿 <zuojiazi@vip.qq.com>
  */
 function check_verify($code, $id = 1) {
@@ -44,7 +46,8 @@ function check_verify($code, $id = 1) {
 /**
  * 系统非常规MD5加密方法
  * @param  string $str 要加密的字符串
- * @return string 
+ * @param string $key 默认密钥
+ * @return string
  */
 function ucenter_md5($str, $key = 'calm7.com') {
     return '' === $str ? '' : md5(sha1($str) . $key);
@@ -53,8 +56,10 @@ function ucenter_md5($str, $key = 'calm7.com') {
 /**
  * 把返回的数据集转换成Tree
  * @param array $list 要转换的数据集
+ * @param string $pk
  * @param string $pid parent标记字段
- * @param string $level level标记字段
+ * @param string $child level标记字段
+ * @param int $root 根
  * @return array
  * @author 麦当苗儿 <zuojiazi@vip.qq.com>
  */
@@ -102,6 +107,7 @@ function show_status_op($status) {
  * 二维数组重新降维成一位数组
  * @param array $array 二维数组
  * @author staitc7 <static7@qq.com>
+ * @return array|null
  */
 function one_dimensional($array) {
     if (empty($array)) {
@@ -114,23 +120,12 @@ function one_dimensional($array) {
     return $tmp;
 }
 
-/**
- * 时间戳格式化
- * @param int $time
- * @return string 完整的时间显示
- * @author huajie <banhuajie@163.com>
- */
-function time_format($time = NULL, $format = 'Y-m-d H:i:s') {
-    $time_format = '';
-    if ($time > 0) {
-        $time_format = date($format, $time);
-    }
-    return $time_format;
-}
 
 /**
- *  分析枚举类型配置值 
+ *  分析枚举类型配置值
  *  格式 a:名称1,b:名称2
+ * @param $string 配置值
+ * @return array
  */
 function parse_config_attr($string) {
     $array = preg_split('/[,;\r\n]+/', trim($string, ",;\r\n"));
@@ -166,6 +161,7 @@ function format_bytes($size, $delimiter = '') {
  * @param intger $type 类型
  * @param bool $all 是否返回全部类型
  * @author huajie <banhuajie@163.com>
+ * @return array|mixed
  */
 function get_action_type($type, $all = false) {
     $list = [
@@ -180,9 +176,10 @@ function get_action_type($type, $all = false) {
 
 /**
  * 获取行为数据
- * @param string $id 行为id
- * @param string $field 需要获取的字段
+ * @param int|string $id 行为id
+ * @internal param string $field 需要获取的字段
  * @author huajie <banhuajie@163.com>
+ * @return bool|null
  */
 function get_action($id = 0) {
     if (empty($id)) {

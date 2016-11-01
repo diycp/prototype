@@ -47,6 +47,7 @@ class AuthGroup extends Model {
      * @param int|array $map 数据的ID或者ID组
      * @param array $data 要修改的数据
      * @author staitc7 <static7@qq.com>
+     * @return bool|int|string
      */
 
     public function setStatus($map = null, $data = null) {
@@ -59,6 +60,8 @@ class AuthGroup extends Model {
     /**
      * 用户组详情
      * @param int $id 用户组详情
+     * @param bool $field
+     * @return array
      * @author staitc7 <static7@qq.com>
      */
 
@@ -72,7 +75,8 @@ class AuthGroup extends Model {
     /**
      * 条件查询用户组
      * @param array $map 查询条件
-     * @param boole|string $field 查询的字段
+     * @param boole|bool|string $field 查询的字段
+     * @return array|null|object
      * @author staitc7 <static7@qq.com>
      */
 
@@ -100,8 +104,9 @@ class AuthGroup extends Model {
 
     /**
      * 检查用户组是否存在
-     * @param 类型 参数 参数说明
      * @author staitc7 <static7@qq.com>
+     * @param int $group_id 组id
+     * @return bool|mixed
      */
 
     public function checkGroupId(int $group_id) {

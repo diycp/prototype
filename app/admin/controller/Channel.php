@@ -4,6 +4,7 @@ namespace app\admin\controller;
 
 use think\Loader;
 use think\Url;
+use think\Cache;
 
 /**
  * Description of Channel
@@ -21,12 +22,7 @@ class Channel extends Admin {
         $Channel = Loader::model('Channel');
         $data = $Channel->channelList($pid);
         $father = $Channel->father($pid); //查询父级ID
-        $value = [
-            'data' => $data['data'] ?? null,
-            'pid' => $pid,
-            'father' => $father,
-            'page' => $data['page']
-        ];
+        $value = ['data' => $data['data'] ?? null, 'pid' => $pid, 'father' => $father, 'page' => $data['page']];
         $this->view->metaTitle = '导航列表';
         return $this->view->assign($value)->fetch();
     }
@@ -46,13 +42,12 @@ class Channel extends Admin {
 
     /**
      * 新增导航
-     * @param int $id 导航ID
      * @param int $pid 父级导航ID
      * @author staitc7 <static7@qq.com>
      */
 
     public function add($pid = 0) {
-        $value['pid'] = (int) $pid ?? 0;
+        $value['pid'] = (int)$pid ?? 0;
         $this->view->metaTitle = '新增导航';
         return $this->view->assign($value)->fetch();
     }
@@ -63,10 +58,13 @@ class Channel extends Admin {
      */
 
     public function renew() {
-        $info = Loader::model('Channel')->renew();
-        return is_array($info) ?
-                $this->success('操作成功', Url::build('index', ['pid' => $info['pid'] ?? 0])) :
-                $this->error($info);
+        $Channel = Loader::model('Channel');
+        $info = $Channel->renew();
+        if ($Channel->getError()) {
+            return $this->error($info);
+        }
+        Cache::rm('menu_list');
+        return $this->success('操作成功', Url::build('index', ['pid' => $info['pid'] ?? 0]));
     }
 
 }

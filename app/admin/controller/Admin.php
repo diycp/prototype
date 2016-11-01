@@ -2,6 +2,7 @@
 
 namespace app\admin\controller;
 
+use Auth\Auth;
 use think\Loader;
 use think\Request;
 use think\Session;
@@ -37,14 +38,16 @@ class Admin {
      * @author staitc7 <static7@qq.com>
      * @return mixed   
      */
-    public function _empty($param) {
-        return $this->view->assign(['info' => $param])->fetch('common/error');
+    public function _empty() {
+        return $this->view->fetch('common/error');
     }
 
     /**
      * 通用单条数据状态修改
+     * @param Request $Request
      * @param int $value 状态
-     * @param int ids 数据条件
+     * @param null $ids
+     * @internal param ids $int 数据条件
      * @author staitc7 <static7@qq.com>
      */
     public function setStatus(Request $Request, $value = null, $ids = null) {
@@ -56,6 +59,7 @@ class Admin {
 
     /**
      * 通用批量数据更新
+     * @param Request $Request
      * @param int $value 状态
      * @author staitc7 <static7@qq.com>
      */
@@ -69,6 +73,7 @@ class Admin {
 
     /**
      * 通用排序更新
+     * @param Request $Request
      * @param int $id 菜单ID
      * @param int $sort 排序
      * @author staitc7 <static7@qq.com>
@@ -141,14 +146,15 @@ class Admin {
 
     /**
      * 权限检测
-     * @param string  $rule    检测的规则
-     * @param string  $mode    check模式
-     * @return boolean
+     * @param string $rule 检测的规则
+     * @param null $type
+     * @param string $mode check模式
+     * @return bool
      * @author 朱亚杰  <xcoolcc@gmail.com>
      */
     final private function checkRule($rule, $type = null, $mode = 'url') {
         static $Auth_static = null;
-        $Auth = $Auth_static ?? new \Auth\Auth();
+        $Auth = $Auth_static ?? new Auth();
         $type = $type ? $type : Config::get('auth_rule.rule_url');
         if (!$Auth->check($rule, $this->uid, $type, $mode)) {
             return false;
@@ -158,8 +164,7 @@ class Admin {
 
     /**
      * 非超级管理员的权限检测
-     * @param object $Request Request对象
-     * @param array $second_urls 
+     * @param array $second_urls
      * @author staitc7 <static7@qq.com>
      * @return mixed
      */
