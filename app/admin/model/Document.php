@@ -117,7 +117,7 @@ class Document extends Model {
         }
         $object = (int) $data['id'] ? $this::update($data) : $this::create($data);
         if ($object) {
-            $article['id'] = $object->id;
+            $article['id'] = $object->getLastInsID();
             $DocumentArticle = new \app\admin\logic\DocumentArticle();
             $content = $DocumentArticle->renew($article);
             if ($DocumentArticle->getError()) {

@@ -31,8 +31,9 @@ class DocumentArticle extends Model {
      * 添加或者更新文章
      * @param array $article 数组
      * @author staitc7 <static7@qq.com>
+     * @return bool
      */
-    public function renew(array $article = null) {
+    public function renew(array $article = []) {
         $exist= $this::where('id',(int) $article['id'])->value('id');
         $object = $exist ? $this::update($article) : $this::create($article);
         unset($exist);
