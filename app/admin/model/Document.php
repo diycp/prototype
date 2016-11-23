@@ -2,6 +2,7 @@
 
 namespace app\admin\model;
 
+use app\admin\logic\DocumentArticle;
 use think\Model;
 use think\Request;
 use think\Db;
@@ -72,7 +73,7 @@ class Document extends Model {
         if (empty($info)) {
             return $this->error = '文章被禁用或已删除';
         }
-        $DocumentArticle = new \app\admin\logic\DocumentArticle();
+        $DocumentArticle = new DocumentArticle();
         $detail = $DocumentArticle->detail($id);
         if ($DocumentArticle->getError()) {
             return $this->error = $DocumentArticle->getError();
@@ -85,6 +86,7 @@ class Document extends Model {
      * @param int|array $map 数据的ID或者ID组
      * @param array $data 要修改的数据
      * @author staitc7 <static7@qq.com>
+     * @return bool|int|string
      */
     public function setStatus($map = null, $data = null) {
         if (empty($map) || empty($data)) {
@@ -117,8 +119,8 @@ class Document extends Model {
         }
         $object = (int) $data['id'] ? $this::update($data) : $this::create($data);
         if ($object) {
-            $article['id'] = $object->getLastInsID();
-            $DocumentArticle = new \app\admin\logic\DocumentArticle();
+            $article['id'] = (int)$data['id'] ? $object->id : $object->getLastInsID();
+            $DocumentArticle = new DocumentArticle();
             $content = $DocumentArticle->renew($article);
             if ($DocumentArticle->getError()) {
                 $data['id'] || $this::destroy($data['id']); //新增失败，删除基础数据
