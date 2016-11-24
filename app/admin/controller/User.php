@@ -66,7 +66,7 @@ class User extends Admin {
             $this->error('不允许对超级管理员执行该操作');
         }
         !is_numeric((int) $value) && $this->error('参数错误');
-        $info = Loader::model($request->controller())->setStatus(['uid' => ['in', (int) $ids]], ['status' => $value]);
+        $info = Loader::model('Member')->setStatus(['uid' => ['in', (int) $ids]], ['status' => $value]);
         return $info !== FALSE ?
                 $this->success($value == -1 ? '删除成功' : '更新成功') :
                 $this->error($value == -1 ? '删除失败' : '更新失败');
@@ -85,7 +85,7 @@ class User extends Admin {
             $this->error('用户中包含超级管理员，不能执行该操作');
         }
         !is_numeric((int) $value) && $this->error('参数错误');
-        $info = Loader::model($request->controller())->setStatus(['uid' => ['in', $ids['ids']]], ['status' => $value]);
+        $info = Loader::model('Member')->setStatus(['uid' => ['in', $ids['ids']]], ['status' => $value]);
         return $info !== FALSE ?
                 $this->success($value == -1 ? '删除成功' : '更新成功') :
                 $this->error($value == -1 ? '删除失败' : '更新失败');
