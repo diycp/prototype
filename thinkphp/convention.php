@@ -58,6 +58,8 @@ return [
     'default_validate'       => '',
     // 默认的空控制器名
     'empty_controller'       => 'Error',
+    // 操作方法前缀
+    'use_action_prefix'      => false,
     // 操作方法后缀
     'action_suffix'          => '',
     // 自动搜索控制器
@@ -83,6 +85,8 @@ return [
     'url_route_on'           => true,
     // 路由配置文件（支持配置多个）
     'route_config_file'      => ['route'],
+    // 路由使用完整匹配
+    'route_complete_match'   => false,
     // 是否强制使用路由
     'url_route_must'         => false,
     // 域名部署
@@ -99,6 +103,10 @@ return [
     'var_ajax'               => '_ajax',
     // 表单pjax伪装变量
     'var_pjax'               => '_pjax',
+    // 是否开启请求缓存 true自动缓存 支持设置请求缓存规则
+    'request_cache'          => false,
+    // 请求缓存有效期
+    'request_cache_expire'   => null,
 
     // +----------------------------------------------------------------------
     // | 模板设置
@@ -107,7 +115,9 @@ return [
     'template'               => [
         // 模板引擎类型 支持 php think 支持扩展
         'type'         => 'Think',
-        // 模板路径
+        // 视图基础目录，配置目录为所有模块的视图起始目录
+        'view_base'    => '',
+        // 当前模板的视图目录 留空为自动获取
         'view_path'    => '',
         // 模板后缀
         'view_suffix'  => 'html',
