@@ -229,20 +229,18 @@ function get_nickname($uid = 0) {
  * 检测头像
  * @param int $user_id 用户ID
  * @author staitc7 <static7@qq.com>
+ * @return mixed|string
  */
 function portrait($user_id = null) {
     $id = empty($user_id) ? is_login() : $user_id;
     $info = Cookie::get("user_{$id}", "portrait_");
     if ($info) {
         return $info;
-    }
-    $portrait_id = Db::name('Member')->where('uid', $id)->value('portrait');
-    if ($portrait_id > 0) {
-        $path = get_cover($portrait_id);
+    } else {
+        $portrait_id = Db::name('Member')->where('uid', $id)->value('portrait');
+        $path = (int)$portrait_id > 0 ? get_cover($portrait_id) : TPL_PATH . "admin/images/default.png";
         Cookie::set("user_{$id}", $path, ['prefix' => 'portrait_', 'expire' => 86400]);
         return $path;
-    } else {
-        return TPL_PATH . 'admin/images/default.png';
     }
 }
 
@@ -262,8 +260,10 @@ function get_cover($cover_id = 0, $field = 'path') {
 
 /**
  * 获取文件名
- * @param 类型 参数 参数说明
+ * @param int $file_id 文件id
+ * @param string $field 字段
  * @author staitc7 <static7@qq.com>
+ * @return mixed|string
  */
 function get_file($file_id = 0, $field = 'name') {
     $file = (int) $file_id > 0 ? Db::name('File')->where(['id' => $file_id])->value($field) : '未知文件';
@@ -272,9 +272,9 @@ function get_file($file_id = 0, $field = 'name') {
 
 /**
  * 检查$pos(推荐位的值)是否包含指定推荐位$contain
- * @param number $pos 推荐位的值
- * @param number $contain 指定推荐位
- * @return boolean true 包含 ， false 不包含
+ * @param int $pos 推荐位的值
+ * @param int $contain 指定推荐位
+ * @return bool true 包含 ， false 不包含
  * @author huajie <banhuajie@163.com>
  */
 function check_position($pos = 0, $contain = 0) {
@@ -288,8 +288,9 @@ function check_position($pos = 0, $contain = 0) {
 /**
  * 检查该分类是否允许发布内容
  * @param int $id 分类id
- * @param int $field 字段
- * @param int $direct 直接返回
+ * @param string $field 字段
+ * @param bool $direct 直接返回
+ * @return bool|int|mixed
  * @author static7 <static7@qq.com>
  */
 function checkCategory(int $id = 0, string $field = 'id', bool $direct = false) {
