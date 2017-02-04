@@ -178,7 +178,7 @@ class User extends Admin {
         }
         $id = $this->images($info);
         if ($id) {
-            Cookie::delete("user_{$this->uid}portrait_");
+            Cookie::delete("user_".$this->uid,"portrait_");
             Db::name('Member')->where('uid', $this->uid)->setField('portrait', $id);
             return $this->success('保存成功', Url::build('user/portrait'));
         }
@@ -188,6 +188,7 @@ class User extends Admin {
      * 图片裁剪
      * @param 类型 参数 参数说明
      * @author staitc7 <static7@qq.com>
+     * @return int|mixed
      */
     public function images($info = null) {
         $tmp_data = Request::instance()->post('avatar_data');
