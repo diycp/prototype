@@ -93,7 +93,7 @@ function get_config_group($group = 0) {
  * @author 麦当苗儿 <zuojiazi@vip.qq.com>
  */
 function think_encrypt($data_tmp, $key_tmp = '', $expire = 0) {
-    $key = md5(empty($key_tmp) ? Config::get('database.data_auth_key') : $key);
+    $key = md5(empty($key_tmp) ? Config::get('key.data_auth_key') : $key_tmp);
     $data = base64_encode($data_tmp);
     $x = 0;
     $len = strlen($data);

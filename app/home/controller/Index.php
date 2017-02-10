@@ -1,7 +1,7 @@
 <?php
 
 namespace app\home\controller;
-
+use think\Config;
 class Index extends Static7 {
 
     public function index() {

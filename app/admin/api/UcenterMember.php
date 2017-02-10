@@ -65,7 +65,7 @@ class UcenterMember extends Model {
             return -1; //用户不存在或被禁用
         }
         /* 验证用户密码 */
-        if (ucenter_md5($password, Config::get('database.uc_auth_key')) !== $user['password']) {
+        if (ucenter_md5($password, Config::get('key.uc_auth_key')) !== $user['password']) {
             return -2; //密码错误
         }
         $this->updateLogin($user->id); //更新用户登录信息
@@ -120,7 +120,7 @@ class UcenterMember extends Model {
         if (!$validate->scene('edit')->check($tmp_data)) {
             return $validate->getError();
         }
-        $data['password'] = ucenter_md5($tmp_data['password'], Config::get('database.uc_auth_key')); //系统加密
+        $data['password'] = ucenter_md5($tmp_data['password'], Config::get('key.uc_auth_key')); //系统加密
         return $this::where(['id' => $uid])->update($data);
        
     }
@@ -134,7 +134,7 @@ class UcenterMember extends Model {
      */
     protected function verifyUser(int $uid, string $password_in) {
         $password = $this::where('id', $uid)->value('password');
-        if (ucenter_md5($password_in, Config::get('database.uc_auth_key')) === $password) {
+        if (ucenter_md5($password_in, Config::get('key.uc_auth_key')) === $password) {
             return true;
         }
         return false;
@@ -162,7 +162,7 @@ class UcenterMember extends Model {
      * @author staitc7 <static7@qq.com>
      */
     protected function setPasswordAttr($value) {
-        return ucenter_md5($value, Config::get('database.uc_auth_key'));
+        return ucenter_md5($value, Config::get('key.uc_auth_key'));
     }
 
     /**

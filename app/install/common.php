@@ -128,6 +128,8 @@ function check_func() {
 /**
  * 写入配置文件
  * @param  array $config 配置信息
+ * @param string $auth 密钥信息
+ * @return string
  */
 function write_config($config, $auth) {
     if (is_array($config)) {
@@ -137,9 +139,11 @@ function write_config($config, $auth) {
         foreach ($config as $name => $value) {
             $conf = str_replace("[{$name}]", $value, $conf);
         }
-        $conf = str_replace('[AUTH_KEY]', $auth, $conf);
+        //读取密钥内容
+        $keyInfo = file_get_contents(APP_PATH . 'install/data/key.tpl');
+        $key = str_replace('[AUTH_KEY]', $auth, $keyInfo);
         //写入应用配置文件
-        if (file_put_contents(APP_PATH . 'database.php', $conf)) {
+        if (file_put_contents(APP_PATH . 'database.php', $conf) && file_put_contents(APP_PATH ."extra/key.php", $key)) {
             show_msg('配置文件写入成功');
         } else {
             show_msg('配置文件写入失败！', 'error');

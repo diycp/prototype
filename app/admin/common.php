@@ -217,7 +217,7 @@ function get_nickname($uid = 0) {
     $name = $info;
     /* 缓存用户 */
     $count = count($list);
-    $max = Config::get('database.user_max_cache');
+    $max = Config::get('key.user_max_cache');
     while ($count-- > $max) {
         array_shift($list);
     }
