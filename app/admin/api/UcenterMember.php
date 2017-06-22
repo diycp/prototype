@@ -1,19 +1,20 @@
 <?php
 
-namespace app\admin\api;
+namespace app\common\api;
 
-use think\Model;
-use think\Request;
-use think\Validate;
-use think\Config;
+use think\{
+    Log, Model, Request, Validate, Config
+};
 
 /**
  * Description of UcenterMember
  * 会员模型
  * @author static7
  */
-class UcenterMember extends Model {
+class UcenterMember extends Model
+{
 
+    protected $resultSetType = 'collection';
     protected $rule = [
         'username' => 'alphaDash|require|length:6,30|unique:ucenter_member,username',
         'password' => 'require|min:6',
@@ -32,7 +33,7 @@ class UcenterMember extends Model {
         'email' => '邮箱格式错误',
         'email.unique' => '邮箱已经被注册过',
     ];
-    protected $insert = ['status' => 1, 'username', 'reg_ip', 'password'];
+    protected $insert = ['status' => 1, 'username', 'reg_ip'];
     protected $autoWriteTimestamp = true;
     protected $createTime = 'reg_time';
     protected $update = ['last_login_time', 'last_login_ip'];
@@ -65,7 +66,7 @@ class UcenterMember extends Model {
             return -1; //用户不存在或被禁用
         }
         /* 验证用户密码 */
-        if (ucenter_md5($password, Config::get('key.uc_auth_key')) !== $user['password']) {
+        if (ucenter_md5($password) !== $user['password']) {
             return -2; //密码错误
         }
         $this->updateLogin($user->id); //更新用户登录信息
@@ -82,16 +83,17 @@ class UcenterMember extends Model {
 
     /**
      * 注册一个新用户
-     * @param  array $data 用户注册信息
-     * @return integer          注册成功-用户信息，注册失败-错误编号
+     * @return int 注册成功-用户信息，注册失败-错误编号
+     * @internal param array $data 用户注册信息
      */
     public function register() {
         $data = Request::instance()->post();
         $validate = Validate::make($this->rule, $this->msg);
         if (!$validate->check($data)) {
-            return $validate->getError(); // 验证失败 输出错误信息
+            return $this->error= $validate->getError(); // 验证失败 输出错误信息
         }
         unset($data['repassword']);
+        $data['password'] = ucenter_md5($data['password']);//系统加密
         /* 添加用户 */
         $object = $this::create($data);
         return $object ? $object->toArray() : '未知错误';
@@ -120,7 +122,7 @@ class UcenterMember extends Model {
         if (!$validate->scene('edit')->check($tmp_data)) {
             return $validate->getError();
         }
-        $data['password'] = ucenter_md5($tmp_data['password'], Config::get('key.uc_auth_key')); //系统加密
+        $data['password'] = ucenter_md5($tmp_data['password']); //系统加密
         return $this::where(['id' => $uid])->update($data);
        
     }
@@ -134,7 +136,7 @@ class UcenterMember extends Model {
      */
     protected function verifyUser(int $uid, string $password_in) {
         $password = $this::where('id', $uid)->value('password');
-        if (ucenter_md5($password_in, Config::get('key.uc_auth_key')) === $password) {
+        if (ucenter_md5($password_in) === $password) {
             return true;
         }
         return false;
@@ -142,8 +144,8 @@ class UcenterMember extends Model {
 
     /**
      * 用户名转为小写
-     * @param 类型 参数 参数说明
      * @author staitc7 <static7@qq.com>
+     * @return string
      */
     protected function setUsernameAttr($value) {
         return strtolower($value);
@@ -157,13 +159,6 @@ class UcenterMember extends Model {
         return Request::instance()->ip(1);
     }
 
-    /**
-     * 获取密码加密Password
-     * @author staitc7 <static7@qq.com>
-     */
-    protected function setPasswordAttr($value) {
-        return ucenter_md5($value, Config::get('key.uc_auth_key'));
-    }
 
     /**
      * 最后登录ip
