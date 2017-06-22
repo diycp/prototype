@@ -22,9 +22,7 @@ class AuthGroupAccess extends Model {
             'uid' => $uid,
             'group_id' => $group_id
         ];
-        return $this::destroy(function($query)use ($map) {
-                    $query->where($map);
-                });
+        return $this::where($map)->delete();
     }
 
     /**
