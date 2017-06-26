@@ -66,6 +66,7 @@ class UcenterMember extends Model
             return -1; //用户不存在或被禁用
         }
         /* 验证用户密码 */
+//        Log::record(ucenter_md5($password));
         if (ucenter_md5($password) !== $user['password']) {
             return -2; //密码错误
         }

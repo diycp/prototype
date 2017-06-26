@@ -51,7 +51,9 @@ class Login {
         $user_id = $userApi->login($username, $password);
         $user_id < 0 && $this->error($this->loginError($user_id)); //登录失败
         $Member = Loader::model('Member');
-        return $Member->login($user_id) ? $this->success('登录成功', Url::build('Index/index')) : $this->error($Member->getError());
+        return $Member->login($user_id) ?
+            $this->success('登录成功', Url::build('admin/Index/index')) :
+            $this->error($Member->getError());
     }
 
     /**

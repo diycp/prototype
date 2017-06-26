@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-
+use think\Env;
 return [
     // +----------------------------------------------------------------------
     // | 应用设置
@@ -17,15 +17,15 @@ return [
     // 应用命名空间
     'app_namespace'          => 'app',
     // 应用调试模式
-    'app_debug'              => true,
+    'app_debug'              => false,
     // 应用Trace
-    'app_trace'              => true,
+    'app_trace'              => false,
     // 应用模式状态
-    'app_status'             => '',
+    'app_status'             => Env::get('app_status',''),
     // 是否支持多模块
     'app_multi_module'       => true,
     // 入口自动绑定模块
-    'auto_bind_module'       => false,
+    'auto_bind_module'       => true,
     // 注册的根命名空间
     'root_namespace'         => [],
     // 扩展函数文件
@@ -85,7 +85,7 @@ return [
     // URL伪静态后缀
     'url_html_suffix'        => 'html',
     // URL普通方式参数 用于自动生成
-    'url_common_param'       => false,
+    'url_common_param'       => true,
     // URL参数方式 0 按名称成对解析 1 按顺序解析
     'url_param_type'         => 0,
     // 是否开启路由
@@ -93,13 +93,13 @@ return [
     // 路由使用完整匹配
     'route_complete_match'   => false,
     // 路由配置文件（支持配置多个）
-    'route_config_file'      => ['route'],
+    'route_config_file'      => ['route/route','route/home_route','route/admin_route'],
     // 是否强制使用路由
     'url_route_must'         => false,
     // 域名部署
     'url_domain_deploy'      => false,
     // 域名根，如thinkphp.cn
-    'url_domain_root'        => '',
+    'url_domain_root'        => Env::get('domain',''),
     // 是否自动转换URL中的控制器和操作名
     'url_convert'            => true,
     // 默认的访问控制器层
@@ -154,7 +154,7 @@ return [
     // 错误显示信息,非调试模式有效
     'error_message'          => '页面错误！请稍后再试～',
     // 显示错误信息
-    'show_error_msg'         => false,
+    'show_error_msg'         => Env::get('show_error_msg',true),
     // 异常处理handle类 留空使用 \think\exception\Handle
     'exception_handle'       => '',
 
@@ -164,11 +164,18 @@ return [
 
     'log'                    => [
         // 日志记录方式，内置 file socket 支持扩展
-        'type'  => 'File',
+        'type'  => Env::get('log.type','file'),
         // 日志保存目录
-        'path'  => LOG_PATH,
+        'path'  => Env::get('log.path',LOG_PATH),
         // 日志记录级别
         'level' => [],
+        //主机IP或者域名
+        'host'                => Env::get('log.host','slog.thinkphp.cn'),
+        //日志强制记录到配置的client_id
+        'force_client_ids'    => ['slog_b46465','slog_cb8888'],
+        //限制允许读取日志的client_id
+        'allow_client_ids'    => ['slog_b46465','slog_cb8888'],
+
     ],
 
     // +----------------------------------------------------------------------
@@ -176,7 +183,7 @@ return [
     // +----------------------------------------------------------------------
     'trace'                  => [
         // 内置Html Console 支持扩展
-        'type' => 'Html',
+        'type' => Env::get('trace.type','Console'),
     ],
 
     // +----------------------------------------------------------------------
@@ -185,13 +192,19 @@ return [
 
     'cache'                  => [
         // 驱动方式
-        'type'   => 'File',
+        'type'   => Env::get('cache.type','file'),
         // 缓存保存目录
-        'path'   => CACHE_PATH,
+        'path'   => Env::get('cache.path',CACHE_PATH),
         // 缓存前缀
-        'prefix' => '',
+        'prefix' =>Env::get('cache.prefix','cache_prototype_'),
+        // redis主机
+        'host' => Env::get('redis.host','127.0.0.1'),
+        // redis端口
+        'port' => Env::get('redis.port',6379),
         // 缓存有效期 0表示永久缓存
-        'expire' => 0,
+        'expire' => Env::get('redis.expire',86400),
+        // 密码
+        'password' => Env::get('redis.password',''),
     ],
 
     // +----------------------------------------------------------------------
@@ -199,15 +212,24 @@ return [
     // +----------------------------------------------------------------------
 
     'session'                => [
-        'id'             => '',
+        'id'             => Env::get('session.id', ''),
         // SESSION_ID的提交变量,解决flash上传跨域
-        'var_session_id' => '',
+        'var_session_id' => Env::get('session.var_session_id','prototype_'),
         // SESSION 前缀
-        'prefix'         => 'think',
+        'prefix'         =>  Env::get('session.prefix','session_prototype_'),
         // 驱动方式 支持redis memcache memcached
-        'type'           => '',
+        'type'           => Env::get('session.type',''),
         // 是否自动开启 SESSION
-        'auto_start'     => true,
+        'auto_start'     =>true,
+        //sessionkey前缀
+        'session_name'=>Env::get('session.name',''),
+        // redis主机
+        'host' => Env::get('redis.host','127.0.0.1'),
+        // redis端口
+        'port' => Env::get('redis.port',6379),
+        // 密码
+        'password' => Env::get('redis.password',''),
+
     ],
 
     // +----------------------------------------------------------------------
@@ -215,13 +237,13 @@ return [
     // +----------------------------------------------------------------------
     'cookie'                 => [
         // cookie 名称前缀
-        'prefix'    => '',
+        'prefix'    => Env::get('cookie.prefix',''),
         // cookie 保存时间
         'expire'    => 0,
         // cookie 保存路径
         'path'      => '/',
         // cookie 有效域名
-        'domain'    => '',
+        'domain'    => Env::get('domain',''),
         //  cookie 启用安全传输
         'secure'    => false,
         // httponly设置
